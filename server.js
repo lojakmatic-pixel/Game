@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+const rooms = require('./rooms');
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
@@ -55,6 +56,7 @@ function getUser(req) {
   const s = db.sessions[m[1]];
   return s && db.users[s.name] ? s.name : null;
 }
+function authReq(req) { return getUser(req); }
 function startSession(res, name, extra) {
   const sid = crypto.randomBytes(32).toString('hex');
   db.sessions[sid] = { name, created: Date.now() };
@@ -191,6 +193,10 @@ const server = http.createServer((req, res) => {
     api(req, res, url).catch(e => { console.error(e); if (!res.headersSent) send(res, 500, { error: 'Serverfehler' }); });
   } else serveStatic(req, res, url);
 });
+
+rooms.loadCatalog();
+const allowGame = id => typeof id === 'string' && (id in rooms.CATALOG || (/^u\d+$/.test(id) && db.community.some(g => g.id === id)));
+rooms.attach(server, { auth: authReq, db, persist, allowGame });
 
 if (require.main === module) {
   server.listen(PORT, () => console.log(`BlockVerse läuft auf http://localhost:${PORT}`));

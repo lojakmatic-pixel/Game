@@ -1,35 +1,41 @@
 # 🧊 BlockVerse
 
-Eine Spielplattform im Stil von Roblox – komplett ohne externe Abhängigkeiten (nur Node.js ≥ 18).
+Eine Mehrspieler-Spielplattform im Stil von Roblox – komplett ohne externe Abhängigkeiten (nur Node.js ≥ 18).
 
 - **Accounts**: Registrieren/Anmelden (Passwörter mit scrypt gehasht, Session-Cookie).
-- **Fortschritt wird gespeichert**: pro Account und Spiel (Highscores, Tycoon-Spielstände inkl. Offline-Einnahmen).
-- **100 eingebaute Spiele** in 5 Kategorien – darunter **Criminal Tycoon** (mit Fahndungs-/Razzia-System und Polizei-Bestechung), 11 weitere Tycoons, Runner, Flappy, Dodge, Shooter, Memory, Climber u. v. m.
-- **Eigene Spiele programmieren**: Im Reiter „Erstellen“ in JavaScript coden, testen, veröffentlichen. Andere Spieler können sie in der Community spielen. Spiele laufen in einer `sandbox`-iframe (kein Zugriff auf Account/Cookies).
-- **Bestenlisten** pro Spiel.
+- **Fortschritt wird gespeichert**: pro Account und Spiel (Highscores, Tycoon-/Farm-/Pet-Spielstände, Offline-Einnahmen).
+- **100 verschiedene Spiele**, jedes mit eigenen Regeln (Arcade, Puzzle, Wissen, Sport, Brettspiele, Versus-Arenen, Abenteuer, Tycoons, Simulationen, Rollenspiel, Kreativ) – darunter **Criminal Tycoon** (Fahndung, Razzien, Polizei bestechen und **andere Spieler ausrauben**).
+- **Alle Spiele sind Mehrspieler** (WebSocket-Räume mit bis zu 8 Spielern, Pixel Canvas bis 30):
+  - **Rundenspiele** (die meisten): Alle im Raum spielen gleichzeitig dieselbe Runde mit **gleichem Seed** (gleiche Hindernisse/Aufgaben/Level), sehen sich live als Geister und bekommen eine Rangliste nach jeder Runde.
+  - **Direkte Interaktion**: Brettspiele (Tic Tac Toe, Vier gewinnt, Gomoku, Nim, Mancala, Schere-Stein-Papier, Pong) und Arenen (Tag, Hot Potato, Sumo, King of the Hill, Orb Eater, Laser Arena, Bomber Arena, Coin Rush, Territory Paint, Tile Drop, Cops & Robbers, Draw & Guess, Tauziehen …) – Spieler beeinflussen sich direkt.
+  - **Offene Welten** (ohne Runden): Tycoons, Farm, Pet Simulator, Börse, Stadt-Rollenspiel, Pixel-Leinwand.
+  - Allein im Raum? Brettspiele und einige Arenen haben einen Computer-Gegner; Hot Potato braucht mindestens 2 Spieler.
+- **Eigene Spiele programmieren**: Im Reiter „Erstellen“ mit JavaScript coden – auch Mehrspieler (`Platform.game(...)`, Events, geteilter Raum-Speicher). Spiele laufen in einer `sandbox`-iframe (kein Zugriff auf Account/Cookies).
+- Chat im Raum, Bestenlisten pro Spiel, Profil mit Fortschrittsübersicht.
 
 ## Starten
 
 ```bash
 npm start          # http://localhost:3000   (PORT / DATA_DIR per Umgebungsvariable)
-npm test           # API-Tests
+npm test           # API- + Mehrspieler-Tests
 ```
 
-Daten liegen in `data/db.json`.
+Daten liegen in `data/db.json`. Für schnelle Tests: `BV_LOBBY=1 BV_BREAK=2` verkürzt Lobby-/Pausenzeit.
 
-## Eigene Spiele – Platform-API
+## Eigene Spiele – Mehrspieler-API
 
+```js
+Platform.game({}, w => ({
+  step(dt) {}, draw() {}, pub() { return { x, y }; },   // pub = Zustand für die anderen Spieler
+  net(ev, from) {}, kv(key, value) {}                    // Events / geteilter Speicher
+}));
 ```
-Platform.canvas / Platform.ctx     Zeichenfeld 640×400
-Platform.load()  -> Promise        gespeicherter Spielstand
-Platform.save(obj)                 Fortschritt speichern
-Platform.score(n)                  Bestenliste
-Platform.engines.<name>(Platform, config)   fertige Engines nutzen:
-  runner flappy dodge catch snake breakout shooter memory whack climber chase racer tycoon
-```
+
+`w.inp` Eingabe · `w.rnd()/w.r()/w.ri()/w.pick()` Zufall (für alle gleich) · `w.score/add/die/finish` · `w.others` · `w.send/sendTo` · `w.set/w.kv` · `w.roster/seat/solo/live()` · `w.data/save` · Zeichnen: `w.e/tx/box/circ/bg/hit`.
 
 ## Aufbau
 
-- `server.js` – HTTP-Server + JSON-API
-- `public/engines.js` – Spiel-Engines · `public/games.js` – Katalog der 100 Spiele
-- `public/app.js` – Oberfläche, Sandbox-Runner, Editor
+- `server.js` – HTTP + JSON-API · `rooms.js` – WebSocket-Server, Räume, Runden (liest den Katalog aus `public/g*.js`)
+- `public/runtime.js` – Spiel-Laufzeit im iframe (Eingabe, Netzwerk, Runden, Geister)
+- `public/g1.js … g5.js` – die 100 Spiele · `public/app.js` – Oberfläche, Editor
+- Vertrauensmodell: Spiele laufen im Browser der Spieler (Prototyp, nicht manipulationssicher).
