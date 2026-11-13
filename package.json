@@ -1,0 +1,8 @@
+{
+  "name": "blockverse",
+  "version": "1.0.0",
+  "description": "Spielplattform: 100 Spiele, Accounts, Fortschritt speichern, eigene Spiele programmieren",
+  "main": "server.js",
+  "scripts": { "start": "node server.js", "test": "node test.js" },
+  "engines": { "node": ">=18" }
+}
