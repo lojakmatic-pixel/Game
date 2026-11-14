@@ -39,3 +39,11 @@ Platform.game({}, w => ({
 - `public/runtime.js` – Spiel-Laufzeit im iframe (Eingabe, Netzwerk, Runden, Geister)
 - `public/g1.js … g5.js` – die 100 Spiele · `public/app.js` – Oberfläche, Editor
 - Vertrauensmodell: Spiele laufen im Browser der Spieler (Prototyp, nicht manipulationssicher).
+
+## Online stellen (Render)
+
+1. Repo auf GitHub, dann auf render.com: **New → Blueprint** → Repo und Branch wählen (`render.yaml` wird erkannt).
+2. Nach dem Deploy bekommst du eine Adresse wie `https://blockverse.onrender.com` – das ist der Spiel-Link.
+3. Die Platte (`/data`) speichert Accounts, Fortschritt und die Pixel-Leinwand. Ohne Platte gehen Daten bei jedem Neustart verloren.
+
+Läuft auch mit jedem anderen Docker-Host (Fly.io, Railway, VPS): `docker build -t blockverse . && docker run -p 80:10000 -v bv:/data blockverse`. Hinter HTTPS-Proxy `BV_TRUST_PROXY=1` setzen (Secure-Cookie, echte Client-IP).

@@ -1,0 +1,14 @@
+# Render Blueprint: Dashboard → New → Blueprint → dieses Repo wählen
+services:
+  - type: web
+    name: blockverse
+    runtime: docker
+    plan: starter          # Persistente Platte braucht einen bezahlten Plan
+    healthCheckPath: /healthz
+    disk:
+      name: blockverse-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: BV_TRUST_PROXY
+        value: "1"

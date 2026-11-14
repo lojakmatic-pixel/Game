@@ -61,12 +61,12 @@ function startSession(res, name, extra) {
   const sid = crypto.randomBytes(32).toString('hex');
   db.sessions[sid] = { name, created: Date.now() };
   persist();
-  send(res, 200, Object.assign({ name }, extra), { 'Set-Cookie': `sid=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000` });
+  send(res, 200, Object.assign({ name }, extra), { 'Set-Cookie': `sid=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=2592000${process.env.BV_TRUST_PROXY ? '; Secure' : ''}` });
 }
 
 async function api(req, res, url) {
   const p = url.pathname;
-  const ip = req.socket.remoteAddress;
+  const ip = process.env.BV_TRUST_PROXY ? String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress : req.socket.remoteAddress;
   if (req.method !== 'GET' && !(req.headers['content-type'] || '').startsWith('application/json') && req.method !== 'DELETE')
     return send(res, 415, { error: 'JSON erwartet' });
   let body = {};
@@ -189,6 +189,7 @@ function serveStatic(req, res, url) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  if (url.pathname === '/healthz') { res.writeHead(200); return res.end('ok'); }
   if (url.pathname.startsWith('/api/')) {
     api(req, res, url).catch(e => { console.error(e); if (!res.headersSent) send(res, 500, { error: 'Serverfehler' }); });
   } else serveStatic(req, res, url);
