@@ -47,3 +47,4 @@ a{color:var(--acc2)}nav a,.logo,.card,.pg{color:inherit}nav a{color:var(--mut)}.
 .chat div{margin:2px 0}.chat span{color:var(--acc2);font-weight:700}
 .chatrow{display:flex;gap:6px}.chatrow input{flex:1;min-width:0}
 .badge{display:inline-block;background:var(--card2);border-radius:12px;padding:2px 10px;font-size:12px;margin-right:4px}
+.logo{background:linear-gradient(90deg,#ffd166,#ff7ad9,#7ad0ff);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:.5px}

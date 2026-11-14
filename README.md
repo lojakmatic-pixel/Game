@@ -1,6 +1,6 @@
 ---
-title: BlockVerse
-emoji: 🧊
+title: Lumora Games
+emoji: ✨
 colorFrom: blue
 colorTo: yellow
 sdk: docker
@@ -8,20 +8,20 @@ app_port: 7860
 pinned: false
 ---
 
-# 🧊 BlockVerse
+# ✨ Lumora Games
 
 Eine Mehrspieler-Spielplattform im Stil von Roblox – komplett ohne externe Abhängigkeiten (nur Node.js ≥ 18).
 
 - **Accounts**: Registrieren/Anmelden (Passwörter mit scrypt gehasht, Session-Cookie).
 - **Fortschritt wird gespeichert**: pro Account und Spiel (Highscores, Tycoon-/Farm-/Pet-Spielstände, Offline-Einnahmen).
-- **100 verschiedene Spiele**, jedes mit eigenen Regeln (Arcade, Puzzle, Wissen, Sport, Brettspiele, Versus-Arenen, Abenteuer, Tycoons, Simulationen, Rollenspiel, Kreativ) – darunter **Criminal Tycoon** (Fahndung, Razzien, Polizei bestechen und **andere Spieler ausrauben**).
+- **108 verschiedene Spiele**, jedes mit eigenen Regeln (Arcade, Puzzle, Wissen, Sport, Brettspiele, Versus-Arenen, Abenteuer, Tycoons, Simulationen, Rollenspiel, Kreativ und **8 echte 3D-Spiele**: Cube Runner, Sky Obby, Kart Race, Ring Flight, Maze, Tank Arena, Town, Stack Tower – mit Touch-Steuerung fürs iPad) – darunter **Criminal Tycoon** (Fahndung, Razzien, Polizei bestechen und **andere Spieler ausrauben**).
 - **Alle Spiele sind Mehrspieler** (WebSocket-Räume mit bis zu 8 Spielern, Pixel Canvas bis 30):
   - **Rundenspiele** (die meisten): Alle im Raum spielen gleichzeitig dieselbe Runde mit **gleichem Seed** (gleiche Hindernisse/Aufgaben/Level), sehen sich live als Geister und bekommen eine Rangliste nach jeder Runde.
   - **Direkte Interaktion**: Brettspiele (Tic Tac Toe, Vier gewinnt, Gomoku, Nim, Mancala, Schere-Stein-Papier, Pong) und Arenen (Tag, Hot Potato, Sumo, King of the Hill, Orb Eater, Laser Arena, Bomber Arena, Coin Rush, Territory Paint, Tile Drop, Cops & Robbers, Draw & Guess, Tauziehen …) – Spieler beeinflussen sich direkt.
   - **Offene Welten** (ohne Runden): Tycoons, Farm, Pet Simulator, Börse, Stadt-Rollenspiel, Pixel-Leinwand.
   - Allein im Raum? Brettspiele und einige Arenen haben einen Computer-Gegner; Hot Potato braucht mindestens 2 Spieler.
 - **Eigene Spiele programmieren**: Im Reiter „Erstellen“ mit JavaScript coden – auch Mehrspieler (`Platform.game(...)`, Events, geteilter Raum-Speicher). Spiele laufen in einer `sandbox`-iframe (kein Zugriff auf Account/Cookies).
-- Chat im Raum, Bestenlisten pro Spiel, Profil mit Fortschrittsübersicht.
+- Chat im Raum, Bestenlisten pro Spiel, Profil mit Fortschrittsübersicht, Sound (🔊 oben rechts abschaltbar), Countdown-Banner, Punkte-Popups.
 
 ## Starten
 
@@ -47,7 +47,7 @@ Platform.game({}, w => ({
 
 - `server.js` – HTTP + JSON-API · `rooms.js` – WebSocket-Server, Räume, Runden (liest den Katalog aus `public/g*.js`)
 - `public/runtime.js` – Spiel-Laufzeit im iframe (Eingabe, Netzwerk, Runden, Geister)
-- `public/g1.js … g5.js` – die 100 Spiele · `public/app.js` – Oberfläche, Editor
+- `public/g1.js … g6.js` – die 108 Spiele (g6 = 3D, nutzt `public/vendor/three.min.js`, MIT-Lizenz) · `public/app.js` – Oberfläche, Editor
 - Vertrauensmodell: Spiele laufen im Browser der Spieler (Prototyp, nicht manipulationssicher).
 
 ## Online stellen (Render)

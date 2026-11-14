@@ -1,5 +1,5 @@
 {
-  "name": "blockverse",
+  "name": "lumora-games",
   "version": "1.0.0",
   "description": "Spielplattform: 100 Spiele, Accounts, Fortschritt speichern, eigene Spiele programmieren",
   "main": "server.js",

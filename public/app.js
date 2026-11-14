@@ -1,4 +1,4 @@
-/* BlockVerse Frontend */
+/* Lumora Games Frontend */
 (function () {
   'use strict';
   const $app = document.getElementById('app'), $who = document.getElementById('who'), $nav = document.getElementById('nav');
@@ -35,23 +35,24 @@
     }
     go.addEventListener('click', submit);
     pw.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-    $app.replaceChildren(el('div', { class: 'auth' }, el('h1', {}, '🧊 BlockVerse'),
+    $app.replaceChildren(el('div', { class: 'auth' }, el('h1', {}, '✨ Lumora Games'),
       el('p', { class: 'mut' }, 'Spiele 100 Spiele, baue eigene und speichere deinen Fortschritt. Dafür brauchst du einen Account.'),
       el('div', { class: 'tabs' }, tl, tr), name, pw, err, go));
     setMode('login');
   }
 
   /* ---------- Spiele-Sandbox + Mehrspieler-Brücke ---------- */
-  function buildDoc(id, code, help) {
+  let threeSrc = '';
+  function buildDoc(id, code, help, three) {
     const payload = JSON.stringify({ id, code, user: me, help: help || '' }).replace(/</g, '\\u003c');
-    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;height:100%}canvas{width:100%;height:100%;display:block}</style></head><body>' +
-      '<canvas id="c" width="640" height="400"></canvas><script>window.__BV=' + payload + '<\/script><script>' + libSrc.replace(/<\/script/gi, '<\\/script') + '<\/script></body></html>';
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000;height:100%;overflow:hidden}canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}</style></head><body>' +
+      '<canvas id="c3" width="1280" height="800"></canvas><canvas id="c" width="640" height="400"></canvas>' + (three ? '<script>' + threeSrc.replace(/<\/script/gi, '<\\/script') + '<\/script>' : '') + '<script>window.__BV=' + payload + '<\/script><script>' + libSrc.replace(/<\/script/gi, '<\\/script') + '<\/script></body></html>';
   }
 
   // opts: multi (WebSocket-Raum), persist (Server-Speicherung), onNet(msg), onScore(), onError(msg)
   function runGame(game, code, opts) {
     const frame = el('iframe', { class: 'frame', sandbox: 'allow-scripts', title: game.title, allow: '' });
-    frame.srcdoc = buildDoc(game.id, code, game.help);
+    frame.srcdoc = buildDoc(game.id, code, game.help, game.three);
     let timer = null, latest = null, ws = null, ready = false, queue = [], closed = false;
     const toFrame = m => { try { frame.contentWindow.postMessage({ bv: 1, t: 'srv', m }, '*'); } catch (e) { /* */ } };
     function deliver(m) { if (opts.onNet) opts.onNet(m); if (ready) toFrame(m); else if (queue.length < 200) queue.push(m); }
@@ -128,6 +129,7 @@
       } catch (e) { return setView(el('p', {}, 'Spiel nicht gefunden.')); }
     }
     if (!game) return setView(el('p', {}, 'Spiel nicht gefunden.'));
+    if (game.three && !threeSrc) { try { threeSrc = await (await fetch('vendor/three.min.js')).text(); } catch (e) { return setView(el('p', {}, '3D-Bibliothek konnte nicht geladen werden.')); } }
     const lb = el('ol', { class: 'lb' }), errBox = el('div', { class: 'err' });
     const plist = el('ul', { class: 'players' }), status = el('div', { class: 'mut' }, 'Verbinde…'), chat = el('div', { class: 'chat' });
     const st = { room: '', players: [], scores: {}, phase: '', left: 0, mode: game.mode };
@@ -327,7 +329,7 @@ Platform.canvas / Platform.ctx       (640×400) für Spiele ohne Mehrspieler-API
   }
   window.addEventListener('hashchange', route);
   (async function init() {
-    const files = ['runtime.js', 'g1.js', 'g2.js', 'g3.js', 'g4.js', 'g5.js'];
+    const files = ['runtime.js', 'g1.js', 'g2.js', 'g3.js', 'g4.js', 'g5.js', 'g6.js'];
     libSrc = (await Promise.all(files.map(f => fetch(f).then(r => r.text())))).join('\n;\n');
     try { me = (await api('GET', '/api/me')).name; start(); } catch (e) { authView(); }
   })();

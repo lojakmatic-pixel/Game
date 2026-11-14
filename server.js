@@ -1,5 +1,5 @@
 'use strict';
-// BlockVerse – Spielplattform-Server (keine externen Abhängigkeiten)
+// Lumora Games – Lumora-Games-Server (keine externen Abhängigkeiten)
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -200,7 +200,7 @@ const allowGame = id => typeof id === 'string' && (id in rooms.CATALOG || (/^u\d
 rooms.attach(server, { auth: authReq, db, persist, allowGame });
 
 if (require.main === module) {
-  server.listen(PORT, () => console.log(`BlockVerse läuft auf http://localhost:${PORT}`));
+  server.listen(PORT, () => console.log(`Lumora Games läuft auf http://localhost:${PORT}`));
   process.on('SIGINT', () => { flushSync(); process.exit(0); });
   process.on('SIGTERM', () => { flushSync(); process.exit(0); });
 }
