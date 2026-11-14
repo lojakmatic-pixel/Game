@@ -21,7 +21,7 @@ Eine Mehrspieler-Spielplattform im Stil von Roblox – komplett ohne externe Abh
   - **Offene Welten** (ohne Runden): Tycoons, Farm, Pet Simulator, Börse, Stadt-Rollenspiel, Pixel-Leinwand.
   - Allein im Raum? Brettspiele und einige Arenen haben einen Computer-Gegner; Hot Potato braucht mindestens 2 Spieler.
 - **Eigene Spiele programmieren**: Im Reiter „Erstellen“ mit JavaScript coden – auch Mehrspieler (`Platform.game(...)`, Events, geteilter Raum-Speicher). Spiele laufen in einer `sandbox`-iframe (kein Zugriff auf Account/Cookies).
-- Chat im Raum, Bestenlisten pro Spiel, Profil mit Fortschrittsübersicht, Sound (🔊 oben rechts abschaltbar), Countdown-Banner, Punkte-Popups.
+- Chat im Raum, Vollbildmodus (⛶), Bestenlisten pro Spiel, Profil mit Fortschrittsübersicht, Sound (🔊 oben rechts abschaltbar), Countdown-Banner, Punkte-Popups.
 
 ## Starten
 

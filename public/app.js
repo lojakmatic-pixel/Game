@@ -157,15 +157,30 @@
       drawPlayers();
     }
     const frame = runGame(game, code, { multi: true, persist: true, onScore: refresh, onNet, onError: m => { errBox.textContent = m; } });
+    // Vollbild: echte Fullscreen-API, sonst (z. B. iPhone) Notlösung über die ganze Seite
+    const stage = el('div', { class: 'stage' }); const fsBtn = el('button', { class: 'fsbtn', title: 'Vollbild (Esc zum Beenden)' }, '⛶ Vollbild'); stage.append(frame, fsBtn);
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const setFsLabel = () => { const on = fsEl() === stage || stage.classList.contains('pseudo'); fsBtn.textContent = on ? '✕ Beenden' : '⛶ Vollbild'; fsBtn.classList.toggle('on', on); };
+    fsBtn.addEventListener('click', async () => {
+      if (stage.classList.contains('pseudo')) { stage.classList.remove('pseudo'); document.body.classList.remove('nofs-scroll'); return setFsLabel(); }
+      if (fsEl()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+      const req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+      try { if (!req) throw new Error('kein Fullscreen'); await req.call(stage); try { if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); } catch (e) { /* nicht überall erlaubt */ } }
+      catch (e) { stage.classList.add('pseudo'); document.body.classList.add('nofs-scroll'); }
+      setFsLabel(); setTimeout(() => frame.focus(), 50);
+    });
+    const onFs = () => { setFsLabel(); if (!fsEl()) try { screen.orientation && screen.orientation.unlock && screen.orientation.unlock(); } catch (e) { /* */ } };
+    document.addEventListener('fullscreenchange', onFs); document.addEventListener('webkitfullscreenchange', onFs);
+    const onEsc = e => { if (e.key === 'Escape' && stage.classList.contains('pseudo')) fsBtn.click(); }; document.addEventListener('keydown', onEsc);
     const msg = el('input', { placeholder: 'Nachricht…', maxLength: 120, onkeydown: e => { if (e.key === 'Enter' && msg.value.trim()) { frame.chat(msg.value); msg.value = ''; e.stopPropagation(); } } });
     refresh(); const iv = setInterval(refresh, 20000);
     setView(el('div', {}, el('p', {}, el('a', { href: '#/' + (code ? 'community' : 'games') }, '← Zurück')),
       el('h1', {}, game.icon + ' ' + game.title),
-      el('div', { class: 'play' }, el('div', {}, frame, errBox, el('p', { class: 'mut' }, '🎮 ' + (game.help || ''))),
+      el('div', { class: 'play' }, el('div', {}, stage, errBox, el('p', { class: 'mut' }, '🎮 ' + (game.help || ''))),
         el('div', { class: 'panel' }, el('p', { class: 'mut' }, game.desc || ''), owner ? el('p', { class: 'mut' }, 'von ' + owner) : '',
           el('span', { class: 'badge' }, MODES[game.mode] || ''), status, el('h3', {}, '👥 Spieler im Raum'), plist,
           chat, el('div', { class: 'chatrow' }, msg), el('h3', {}, '🏆 Bestenliste (gesamt)'), lb, el('p', { class: 'mut' }, '💾 Fortschritt wird automatisch gespeichert.')))),
-      () => { clearInterval(iv); clearInterval(iv2); return frame.cleanup(); });
+      () => { clearInterval(iv); clearInterval(iv2); document.removeEventListener('fullscreenchange', onFs); document.removeEventListener('webkitfullscreenchange', onFs); document.removeEventListener('keydown', onEsc); document.body.classList.remove('nofs-scroll'); if (fsEl()) try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) { /* */ } return frame.cleanup(); });
   }
 
   /* ---------- Community ---------- */
