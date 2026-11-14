@@ -1,3 +1,13 @@
+---
+title: BlockVerse
+emoji: 🧊
+colorFrom: blue
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # 🧊 BlockVerse
 
 Eine Mehrspieler-Spielplattform im Stil von Roblox – komplett ohne externe Abhängigkeiten (nur Node.js ≥ 18).
